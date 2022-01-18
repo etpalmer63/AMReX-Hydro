@@ -50,7 +50,7 @@ Godunov::ComputeAofs ( MultiFab& aofs,              // output state
     int const* iconserv_ptr = iconserv_d.data();
 
     // If we need convective form, we must also compute div(u_mac)
-    MultiFab divu_mac(state.boxArray(),state.DistributionMap(),1,0);;
+    MultiFab divu_mac(state.boxArray(),state.DistributionMap(),1,4);;
     for (Long i = 0; i < iconserv.size(); ++i)
     {
         if (!iconserv[i])
@@ -60,6 +60,7 @@ Godunov::ComputeAofs ( MultiFab& aofs,              // output state
                          u[1] = &vmac;,
                          u[2] = &wmac;);
             amrex::computeDivergence(divu_mac,u,geom);
+            divu_mac.FillBoundary(geom.periodicity());
 
             break;
         }
@@ -267,6 +268,20 @@ Godunov::ComputeSyncAofs ( MultiFab& aofs,
     }
 #endif
 
+    // Call BDS routine
+    //
+    if(bds_flag)
+    {
+        ComputeEdgeStateBDS(
+               AMREX_D_DECL(xedge, yedge, zedge),
+               geom,
+               AMREX_D_DECL(umac, vmac, wmac),
+               dt,
+               ncomp,
+               iconserv,
+                )
+    }
+
 
 #ifdef _OPENMP
 #pragma omp parallel if (Gpu::notInLaunchRegion())
@@ -298,17 +313,20 @@ Godunov::ComputeSyncAofs ( MultiFab& aofs,
                           const auto& v = vmac.const_array(mfi);,
                           const auto& w = wmac.const_array(mfi););
 
-            ComputeEdgeState( bx, ncomp,
-                              state.array(mfi,state_comp),
-                              AMREX_D_DECL( xed, yed, zed ),
-                              AMREX_D_DECL( u, v, w ),
-                              divu.array(mfi),
-                              fq.array(mfi,fq_comp),
-                              geom, dt, d_bc,
-                              iconserv.data(),
-                              use_ppm,
-                              use_forces_in_trans,
-                              is_velocity );
+            if(!bds_flag)
+            {
+                ComputeEdgeState( bx, ncomp,
+                                  state.array(mfi,state_comp),
+                                  AMREX_D_DECL( xed, yed, zed ),
+                                  AMREX_D_DECL( u, v, w ),
+                                  divu.array(mfi),
+                                  fq.array(mfi,fq_comp),
+                                  geom, dt, d_bc,
+                                  iconserv.data(),
+                                  use_ppm,
+                                  use_forces_in_trans,
+                                  is_velocity );
+            }
         }
 
         // Temporary divergence
