@@ -69,8 +69,7 @@ BDS::ComputeAofs ( MultiFab& aofs,
     }
 #endif
 
-    if (!known_edgestate)
-    {
+    if ( !known_edgestate ) {
         for( int icomp = 0; icomp < ncomp; ++icomp)
         {
             BDS::ComputeEdgeState( state, state_comp + icomp,
