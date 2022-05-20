@@ -23,16 +23,14 @@ jobs:
         path: amrex
     - name: Load Dependencies
       run: AMReX-Hydro/.github/workflows/dependencies/dependencies_CUDA10_2.sh
-    - name: Verify Dependencies
-      run: |
-        cmake --version
-        nvcc --version || echo "nvcc not in PATH!"
     - name: Build & Install AMReX
       run: |
         export PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
         export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
         which nvcc || echo "nvcc not in PATH!"
-        g++ --version
+        cmake --version
+        nvcc --version || echo "nvcc not in PATH!"
+
         cd amrex
         mkdir build
         cd build
@@ -53,6 +51,12 @@ jobs:
         cmake --install .
     - name: Build AMReX-Hydro
       run: |
+        export PATH=/usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
+        export LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
+
+        cmake --version
+        nvcc --version || echo "nvcc not in PATH!"
+
         cd ${GITHUB_WORKSPACE}/AMReX-Hydro
         mkdir build
         cd build
