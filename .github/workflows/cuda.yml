@@ -62,8 +62,8 @@ jobs:
           -DHYDRO_EB=ON                                             \
           -DHYDRO_MPI=ON                                            \
           -DHYDRO_OMP=ON                                            \
-          -DCMAKE_C_COMPILER=$(which g++-6)                        \
-          -DCMAKE_CXX_COMPILER=$(which g++-6)                      \
+          -DCMAKE_C_COMPILER=$(which gcc-6)                         \
+          -DCMAKE_CXX_COMPILER=$(which g++-6)                       \
           -DCMAKE_CUDA_HOST_COMPILER=$(which g++-6)
         cmake --build . -j 2
   library2:
