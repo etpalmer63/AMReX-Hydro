@@ -45,7 +45,10 @@ jobs:
             -DAMReX_CUDA_ERROR_CROSS_EXECUTION_SPACE_CALL=ON         \
             -DCMAKE_VERBOSE_MAKEFILE=ON                              \
             -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/amrex_tmp     \
-            -DCMAKE_CXX_STANDARD=17
+            -DCMAKE_CXX_STANDARD=17                                  \
+            -DCMAKE_C_COMPILER=$(which g++-6)                        \
+            -DCMAKE_CXX_COMPILER=$(which g++-6)                      \
+            -DCMAKE_CUDA_HOST_COMPILER=$(which g++-6)
         cmake --build . -j 2
         cmake --install .
     - name: Build AMReX-Hydro
